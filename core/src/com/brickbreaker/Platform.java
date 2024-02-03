@@ -1,5 +1,7 @@
 package com.brickbreaker;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,13 +11,14 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Platform {
 
-	private static Vector2 position;
+	private Random random = new Random();
+	private Vector2 position;
 	private Sprite sprite;
 	private float width = 1f;
-	private static float height = 0.75f;
+	private float height = 1f;
 	private int velocity = 300;
 	
-	public static Vector2 getPosition() {
+	public Vector2 getPosition() {
 		return position;
 	}
 
@@ -23,7 +26,7 @@ public class Platform {
 		return sprite;
 	}
 
-	public static float getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
@@ -35,6 +38,8 @@ public class Platform {
 	}
 	
 	protected void drawPlatform(SpriteBatch batch) {
+		//System.out.println(height);
+		//System.out.println(sprite.getHeight());
 		movePlatform();
 		sprite.setPosition(position.x, position.y);
 		sprite.draw(batch);
@@ -51,10 +56,18 @@ public class Platform {
 				position.x += deltaTime*velocity;
 	}
 	
-	protected void eject(Ball ball) {
+	protected void eject(Ball ball, int ballVelocity) {
 		if(sprite.getBoundingRectangle().overlaps(ball.getSprite().getBoundingRectangle())) {
-			if (ball.getVelocity() < 0)
-				ball.changeDirection();
+			if (ball.getVelocityY() < 0) {
+				ball.changeDirectionY();
+				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+					ball.setVelocityX(Math.abs(ball.getVelocityX())*-1);
+				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					ball.setVelocityX(Math.abs(ball.getVelocityX()));
+				}
+				ball.setVelocityX(random.nextInt(Integer.signum(ball.getVelocityX())*ballVelocity-50, Integer.signum(ball.getVelocityX())*ballVelocity+50));
+				ball.setVelocityY(random.nextInt(Integer.signum(ball.getVelocityY())*ballVelocity-50, Integer.signum(ball.getVelocityY())*ballVelocity+50));
+			}
 		}
 	}
 }

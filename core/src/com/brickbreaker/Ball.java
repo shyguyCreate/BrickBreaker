@@ -1,6 +1,5 @@
 package com.brickbreaker;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,16 +8,24 @@ import com.badlogic.gdx.math.Vector2;
 public class Ball {
 
 	private Vector2 position;
-	private static Sprite sprite;
+	private Sprite sprite;
 	private float scale = 0.4f;
-	private int velocity = 0;
-	private Platform platform;	
-	
-	public int getVelocity() {
-		return velocity;
+	private int velocityX = 0;
+	private int velocityY = 0;
+	private Platform platform;
+
+	public int getVelocityX() {
+		return velocityX;
 	}
-	public void setVelocity(int velocity) {
-		this.velocity = velocity;
+	public void setVelocityX(int velocityX) {
+		this.velocityX = velocityX;
+	}
+
+	public int getVelocityY() {
+		return velocityY;
+	}
+	public void setVelocityY(int velocityY) {
+		this.velocityY = velocityY;
 	}
 
 	public Sprite getSprite() {
@@ -36,8 +43,9 @@ public class Ball {
 	}
 	
 	protected void resetBall() {
-		velocity = 0;
-		position = new Vector2(Platform.getPosition().x+platform.getSprite().getWidth()/4, Platform.getHeight());
+		velocityX = 0;
+		velocityY = 0;
+		position = new Vector2(platform.getPosition().x+platform.getSprite().getWidth()/4, platform.getHeight());
 		sprite.setPosition(position.x, position.y);
 	}
 	
@@ -48,11 +56,32 @@ public class Ball {
 	}
 	
 	protected void moveBall() {
-		float deltaTime = Gdx.graphics.getDeltaTime();
-		position.y += deltaTime*velocity;
+		moveBallX();
+		moveBallY();
 	}
 	
-	protected void changeDirection() {
-		velocity *= -1;
+	protected void moveBallX() {
+		position.x += velocityX*BrickBreaker.deltaTime;
+	}
+	protected void moveBallY() {
+		position.y += velocityY*BrickBreaker.deltaTime;
+	}
+	
+	protected void changeDirectionX() {
+		velocityX *= -1;
+		moveBallX();
+	}
+	protected void changeDirectionY() {
+		velocityY *= -1;
+		moveBallY();
+	}
+	
+	protected void changeDirectionX(int i) {
+		velocityX *= -1;
+		moveBallX();
+	}
+	protected void changeDirectionY(int i) {
+		velocityY *= -1;
+		moveBallY();
 	}
 }

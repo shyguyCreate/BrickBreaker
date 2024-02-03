@@ -14,6 +14,7 @@ public class BrickBreaker extends ApplicationAdapter {
 	
 	public static Vector2 initialScreenSize;
 	public static float wallWidth;
+	public static float deltaTime;
 	
 	SpriteBatch batch;
 	
@@ -78,11 +79,15 @@ public class BrickBreaker extends ApplicationAdapter {
 	@Override
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
+		deltaTime = Gdx.graphics.getDeltaTime();
 		
-		if (ball.getVelocity() == 0) {
-			if(Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT) ||
-					Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				ball.setVelocity(ballVelocity);
+		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
+			if(Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+				ball.setVelocityX(-ballVelocity);
+				ball.setVelocityY(ballVelocity);
+			} else if(Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				ball.setVelocityX(ballVelocity);
+				ball.setVelocityY(ballVelocity);
 			}
 		}
 		
@@ -98,13 +103,13 @@ public class BrickBreaker extends ApplicationAdapter {
 		
 		floor.isOut(ball,player);
 		
-		platform.eject(ball);
+		platform.eject(ball, ballVelocity);
 		
 		batch.begin();
 		for (Brick brick : bricks) {
 			if(! brick.isBroken()) {
 				if(brick.hasCollision(ball, brick.sprite.getBoundingRectangle())) {
-					ball.changeDirection();
+					ball.changeDirectionY();
 					brick.receiveDamage();
 					break;
 				}
@@ -113,16 +118,18 @@ public class BrickBreaker extends ApplicationAdapter {
 		if (! monster.isBroken()) {
 			monster.drawMonster(batch);
 			if(monster.hasCollision(ball, monster.sprite.getBoundingRectangle())) {
-				ball.changeDirection();
-				monster.receiveDamage();
+				if (monster.shouldBounce(ball, 's')) {
+					ball.changeDirectionY();
+					monster.receiveDamage();
+				}
 			}
 		}
 		batch.end();
 		
 		walls.drawLeftWall();
 		walls.drawRightWall();
-		walls.bounce(ball, walls.getLeftWall());
-		walls.bounce(ball, walls.getRightWall());
+		walls.bounce(ball, walls.getLeftWall(), 'w');
+		walls.bounce(ball, walls.getRightWall(), 'e');
 
 		if(player.isAlive()) {
 			//ball.setVelocity(0);

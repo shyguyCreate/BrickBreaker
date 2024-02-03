@@ -32,9 +32,9 @@ public class Walls extends Surface {
 		shapeRenderer.end();
 	}
 	
-	protected void bounce(Ball ball, Rectangle wall) {
-		if (hasCollision(ball, wall)) {
-			ball.changeDirection();
-		}
+	protected void bounce(Ball ball, Rectangle wall, char side) {
+		if (hasCollision(ball, wall))
+			if (shouldBounce(ball, side))
+				ball.changeDirectionX();
 	}
 }
