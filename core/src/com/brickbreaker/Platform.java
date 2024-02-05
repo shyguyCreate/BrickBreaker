@@ -30,14 +30,14 @@ public class Platform {
 		return height;
 	}
 
-	protected void createPlatform() {
+	public Platform() {
 		sprite = new Sprite(new Texture("platform.png"));
 		sprite.setScale(width, height);
 		position = new Vector2((Gdx.graphics.getWidth()-sprite.getWidth())/2, 0);
 		sprite.setPosition(position.x, position.y);
 	}
 	
-	protected void drawPlatform(SpriteBatch batch) {
+	void drawPlatform(SpriteBatch batch) {
 		//System.out.println(height);
 		//System.out.println(sprite.getHeight());
 		movePlatform();
@@ -45,28 +45,34 @@ public class Platform {
 		sprite.draw(batch);
 	}
 	
-	protected void movePlatform() {
+	void movePlatform() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
-		if(Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT))
+		if(Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
 			if(position.x-deltaTime*velocity >= BrickBreaker.wallWidth)
 				position.x -= deltaTime*velocity;
-		if(Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT))
+			else
+				position.x =BrickBreaker.wallWidth;
+		}
+		if(Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
 			if(position.x+deltaTime*velocity <= BrickBreaker.initialScreenSize.x-BrickBreaker.wallWidth-sprite.getWidth())
 				position.x += deltaTime*velocity;
+			else
+				position.x = BrickBreaker.initialScreenSize.x-BrickBreaker.wallWidth-sprite.getWidth();
+		}
 	}
 	
-	protected void eject(Ball ball, int ballVelocity) {
+	void eject(Ball ball, int ballVelocity) {
 		if(sprite.getBoundingRectangle().overlaps(ball.getSprite().getBoundingRectangle())) {
 			if (ball.getVelocityY() < 0) {
-				ball.changeDirectionY();
 				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
 					ball.setVelocityX(Math.abs(ball.getVelocityX())*-1);
 				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
 					ball.setVelocityX(Math.abs(ball.getVelocityX()));
 				}
-				ball.setVelocityX(random.nextInt(Integer.signum(ball.getVelocityX())*ballVelocity-50, Integer.signum(ball.getVelocityX())*ballVelocity+50));
-				ball.setVelocityY(random.nextInt(Integer.signum(ball.getVelocityY())*ballVelocity-50, Integer.signum(ball.getVelocityY())*ballVelocity+50));
+				ball.setVelocityX(random.nextInt(ballVelocity-100, ballVelocity+100) * Integer.signum(ball.getVelocityX()));
+				ball.setVelocityY(ballVelocity*2 - Math.abs(ball.getVelocityX()));
+				System.out.println(ball.getVelocityX()+" "+ ball.getVelocityY());
 			}
 		}
 	}

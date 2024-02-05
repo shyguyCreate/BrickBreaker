@@ -10,28 +10,32 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 public class Monster extends Breakable {
 
-	protected Sprite sprite;
+	private Sprite sprite;
 	private float scale = 0.725f;
 	
 	public Monster(int resistance) {
 		this.resistance = resistance;
-	}
-
-	protected void createMonster() {
 		sprite = new Sprite(new Texture("monster.png"));
 		sprite.setScale(scale);
 		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
 		sprite.setPosition(0-Gdx.graphics.getWidth()*0.25f, Gdx.graphics.getHeight()*0.8f);
 	}
+
+	@Override
+	protected boolean hasCollision(Ball ball) {
+		return super.hasCollision(ball, sprite.getBoundingRectangle());
+	}
 	
-	protected void drawMonster(SpriteBatch batch) {
+	@Override
+	protected void draw(SpriteBatch batch) {
 		sprite.draw(batch);
 	}
 
 	@Override
-	protected void receiveDamage() {
+	protected void collision() {
 		super.receiveDamage();
 		sprite.setColor(Color.RED);
+		Timer.instance().clear();
 		Timer.schedule(new Task(){
 			@Override
 			public void run() {
@@ -39,5 +43,4 @@ public class Monster extends Breakable {
 			}
 		}, 0.3f);
 	}
-	
 }

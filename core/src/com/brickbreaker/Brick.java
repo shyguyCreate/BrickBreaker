@@ -10,7 +10,7 @@ public class Brick extends Breakable {
 
 	private Vector2 position;
 	private Color color;
-	protected Sprite sprite;
+	private Sprite sprite;
 	private static float scale = 0.7f;
 	
 	public static float getScale() {
@@ -38,12 +38,18 @@ public class Brick extends Breakable {
 		sprite.setPosition(position.x, position.y);
 	}
 	
-	protected void drawBrick(SpriteBatch batch) {
+	@Override
+	protected void draw(SpriteBatch batch) {
 		sprite.draw(batch);
 	}
 
 	@Override
-	protected void receiveDamage() {
+	protected boolean hasCollision(Ball ball) {
+		return super.hasCollision(ball, sprite.getBoundingRectangle());
+	}
+
+	@Override
+	protected void collision() {
 		super.receiveDamage();
 		switch (resistance) {
 		case 3:

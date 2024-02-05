@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -16,14 +17,14 @@ public class BrickBreaker extends ApplicationAdapter {
 	public static float wallWidth;
 	public static float deltaTime;
 	
-	SpriteBatch batch;
-	
+	private Rectangle floorRectangle;
+	private SpriteBatch batch;
 	private Player player;
 	private Platform platform;
 	private Ball ball;
-	private Floor floor;
 	private Monster monster;
-	private Walls walls;
+	private Wall leftWall;
+	private Wall rightWall;
 	private Brick[] bricks;
 	
 	private int ballVelocity = 500;
@@ -31,21 +32,18 @@ public class BrickBreaker extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
 		
 		initialScreenSize = new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		wallWidth = initialScreenSize.x * 0.025f;
+		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
 		
+		batch = new SpriteBatch();
 		player = new Player();
 		platform = new Platform();
 		ball = new Ball(platform);
-		floor = new Floor();
 		monster = new Monster(monsterResistance);
-		walls = new Walls();
-		
-		platform.createPlatform();
-		ball.createBall();
-		monster.createMonster();
+		leftWall = new Wall(new Rectangle(0, 0, wallWidth, initialScreenSize.y));
+		rightWall = new Wall(new Rectangle(initialScreenSize.x - wallWidth, 0, initialScreenSize.x, initialScreenSize.y));
 		
 		int numBricksColumns = 7;
 		int numBricksRows = 5;
@@ -73,7 +71,6 @@ public class BrickBreaker extends ApplicationAdapter {
 			bricks[i] = new Brick(new Vector2(position), Color.RED, brickResistance);
 			bricks[i].createBrick();
 		}
-		
 	}
 
 	@Override
@@ -91,49 +88,44 @@ public class BrickBreaker extends ApplicationAdapter {
 			}
 		}
 		
+		//System.out.println(ball.getVelocityX()+"  "+ball.getVelocityY());
 		batch.begin();
 		platform.drawPlatform(batch);
 		ball.drawBall(batch);
-		for (Brick brick : bricks) {
-			if(! brick.isBroken()) {
-				brick.drawBrick(batch);
-			}
+		for (Surface surface : Surface.getAllSurfaces()) {
+			surface.draw(batch);
 		}
 		batch.end();
 		
-		floor.isOut(ball,player);
+		ball.moveBallX();
+		for (Surface surface : Surface.getAllSurfaces()) {
+			if (surface.hasCollision(ball)) {
+				ball.changeDirectionX();
+				surface.collision();
+				break;
+			}
+		}
+		
+		ball.moveBallY();
+		for (Surface surface : Surface.getAllSurfaces()) {
+			if (surface.hasCollision(ball)) {
+				ball.changeDirectionY();
+				surface.collision();
+				break;
+			}
+		}
 		
 		platform.eject(ball, ballVelocity);
 		
-		batch.begin();
-		for (Brick brick : bricks) {
-			if(! brick.isBroken()) {
-				if(brick.hasCollision(ball, brick.sprite.getBoundingRectangle())) {
-					ball.changeDirectionY();
-					brick.receiveDamage();
-					break;
-				}
+		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())){
+			ball.resetBall(platform);
+			player.removeLife();
+	
+			if (player.isAlive()) {
+				//ball.setVelocity(0);
 			}
 		}
-		if (! monster.isBroken()) {
-			monster.drawMonster(batch);
-			if(monster.hasCollision(ball, monster.sprite.getBoundingRectangle())) {
-				if (monster.shouldBounce(ball, 's')) {
-					ball.changeDirectionY();
-					monster.receiveDamage();
-				}
-			}
-		}
-		batch.end();
 		
-		walls.drawLeftWall();
-		walls.drawRightWall();
-		walls.bounce(ball, walls.getLeftWall(), 'w');
-		walls.bounce(ball, walls.getRightWall(), 'e');
-
-		if(player.isAlive()) {
-			//ball.setVelocity(0);
-		}
 	}
 	
 	@Override
