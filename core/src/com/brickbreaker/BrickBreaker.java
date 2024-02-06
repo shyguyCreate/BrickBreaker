@@ -17,6 +17,8 @@ public class BrickBreaker extends ApplicationAdapter {
 	public static float wallWidth;
 	public static float deltaTime;
 
+	private Texture background;
+
 	private Rectangle floorRectangle;
 	private SpriteBatch batch;
 	private Player player;
@@ -33,6 +35,8 @@ public class BrickBreaker extends ApplicationAdapter {
 		initialScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		wallWidth = initialScreenSize.x * 0.025f;
 		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
+
+		background = new Texture("space.jpg");
 
 		int playerLives = 3;
 		int monsterResistance = 10;
@@ -90,6 +94,9 @@ public class BrickBreaker extends ApplicationAdapter {
 		}
 
 		batch.begin();
+		batch.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
+		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
+		batch.setColor(new Color(1, 1, 1, 1));
 		platform.drawPlatform(batch);
 		ball.drawBall(batch);
 		for (Surface surface : Surface.getAllSurfaces()) {
@@ -129,6 +136,7 @@ public class BrickBreaker extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
+		background.dispose();
 		batch.dispose();
 	}
 }
