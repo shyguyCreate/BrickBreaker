@@ -12,11 +12,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class BrickBreaker extends ApplicationAdapter {
-	
+
 	public static Vector2 initialScreenSize;
 	public static float wallWidth;
 	public static float deltaTime;
-	
+
 	private Rectangle floorRectangle;
 	private SpriteBatch batch;
 	private Player player;
@@ -26,69 +26,69 @@ public class BrickBreaker extends ApplicationAdapter {
 	private Wall leftWall;
 	private Wall rightWall;
 	private Brick[] bricks;
-	
-	private int ballVelocity = 500;
-	private int monsterResistance = 10;
-	
+
 	@Override
-	public void create () {
-		
-		initialScreenSize = new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+	public void create() {
+
+		initialScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		wallWidth = initialScreenSize.x * 0.025f;
 		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
-		
+
+		int playerLives = 3;
+		int monsterResistance = 10;
+		int ballInitialVelocity = 500;
+
 		batch = new SpriteBatch();
-		player = new Player();
+		player = new Player(playerLives);
 		platform = new Platform();
-		ball = new Ball(platform);
+		ball = new Ball(platform, ballInitialVelocity);
 		monster = new Monster(monsterResistance);
 		leftWall = new Wall(new Rectangle(0, 0, wallWidth, initialScreenSize.y));
 		rightWall = new Wall(new Rectangle(initialScreenSize.x - wallWidth, 0, initialScreenSize.x, initialScreenSize.y));
-		
+
 		int numBricksColumns = 7;
-		int numBricksRows = 5;
-		int brickResistance = 3;
-		
-		bricks = new Brick[numBricksRows*numBricksColumns];
-		Vector2 position = new Vector2(0, Gdx.graphics.getHeight()*0.75f);
-		float brickScale = Brick.getScale();
+		int numBricksRows = 6;
+		int brickWeakestResistance = 1;
+
+		bricks = new Brick[numBricksRows * numBricksColumns];
 		Sprite brickSprite = new Sprite(new Texture("brick_new.png"));
-		brickSprite.setScale(brickScale);
-		brickSprite.setSize(brickSprite.getWidth() * brickScale, brickSprite.getHeight() * brickScale);
-		
-		for(int i = 0; i < numBricksRows*numBricksColumns; i++)
-		{
-			if (i == 0) {
+		brickSprite.setScale(Brick.SCALE);
+		brickSprite.setSize(brickSprite.getWidth() * Brick.SCALE, brickSprite.getHeight() * Brick.SCALE);
+		Vector2 position = new Vector2(0, Gdx.graphics.getHeight() * 0.8f);
+		Color[] brickColors = { Color.PINK, Color.RED, Color.PURPLE };
+		int currentColor = brickColors.length;
+
+		for (int i = 0; i < numBricksRows * numBricksColumns; i++) {
+			if (i % numBricksColumns == 0) {
 				position.x = 0;
-				
-			} else if (i % numBricksColumns == 0) {
-				position.x = 0;
-				position.y -= brickSprite.getHeight()*brickScale;
+				position.y -= brickSprite.getHeight() * Brick.SCALE;
+				currentColor = (currentColor > 0) ? currentColor - 1 : brickColors.length - 1;
+				brickSprite.setColor(brickColors[currentColor]);
 			} else {
-				position.x += brickSprite.getWidth()*brickScale;
+				position.x += brickSprite.getWidth() * Brick.SCALE;
 			}
-			
-			bricks[i] = new Brick(new Vector2(position), Color.RED, brickResistance);
-			bricks[i].createBrick();
+
+			brickSprite.setPosition(position.x, position.y);
+
+			bricks[i] = new Brick(brickSprite, brickSprite.getColor(), position, brickWeakestResistance + currentColor);
 		}
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		ScreenUtils.clear(0, 0, 0, 1);
 		deltaTime = Gdx.graphics.getDeltaTime();
-		
+
 		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
-			if(Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
-				ball.setVelocityX(-ballVelocity);
-				ball.setVelocityY(ballVelocity);
-			} else if(Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				ball.setVelocityX(ballVelocity);
-				ball.setVelocityY(ballVelocity);
+			if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+				ball.setVelocityX(-ball.getINITIAL_VELOCITY());
+				ball.setVelocityY(ball.getINITIAL_VELOCITY());
+			} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				ball.setVelocityX(ball.getINITIAL_VELOCITY());
+				ball.setVelocityY(ball.getINITIAL_VELOCITY());
 			}
 		}
-		
-		//System.out.println(ball.getVelocityX()+"  "+ball.getVelocityY());
+
 		batch.begin();
 		platform.drawPlatform(batch);
 		ball.drawBall(batch);
@@ -96,7 +96,7 @@ public class BrickBreaker extends ApplicationAdapter {
 			surface.draw(batch);
 		}
 		batch.end();
-		
+
 		ball.moveBallX();
 		for (Surface surface : Surface.getAllSurfaces()) {
 			if (surface.hasCollision(ball)) {
@@ -105,7 +105,7 @@ public class BrickBreaker extends ApplicationAdapter {
 				break;
 			}
 		}
-		
+
 		ball.moveBallY();
 		for (Surface surface : Surface.getAllSurfaces()) {
 			if (surface.hasCollision(ball)) {
@@ -114,22 +114,21 @@ public class BrickBreaker extends ApplicationAdapter {
 				break;
 			}
 		}
-		
-		platform.eject(ball, ballVelocity);
-		
-		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())){
+
+		platform.eject(ball);
+
+		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())) {
 			ball.resetBall(platform);
 			player.removeLife();
-	
+
 			if (player.isAlive()) {
-				//ball.setVelocity(0);
+				// ball.setVelocity(0);
 			}
 		}
-		
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch.dispose();
 	}
 }

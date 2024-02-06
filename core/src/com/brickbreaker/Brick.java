@@ -8,36 +8,19 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Brick extends Breakable {
 
-	private Vector2 position;
-	private Color color;
+	static final float SCALE = 0.7f;
+
 	private Sprite sprite;
-	private static float scale = 0.7f;
-	
-	public static float getScale() {
-		return scale;
-	}
-	
-	public Vector2 getPosition() {
-		return position;
-	}
-	public void setPosition(Vector2 position) {
-		this.position = position;
+	private final Color COLOR;
+	private final Vector2 POSITION;
+
+	public Brick(Sprite sprite, Color color, Vector2 position, int resistance) {
+		super(resistance);
+		this.POSITION = new Vector2(position);
+		this.COLOR = new Color(color);
+		this.sprite = new Sprite(sprite);
 	}
 
-	public Brick(Vector2 position, Color color, int resistance) {
-		this.position = position;
-		this.color = color;
-		this.resistance = resistance;
-	}
-
-	protected void createBrick() {
-		sprite = new Sprite(new Texture("brick_new.png"));
-		sprite.setColor(color);
-		sprite.setScale(scale);
-		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition(position.x, position.y);
-	}
-	
 	@Override
 	protected void draw(SpriteBatch batch) {
 		sprite.draw(batch);
@@ -61,11 +44,12 @@ public class Brick extends Breakable {
 		case 1:
 			sprite = new Sprite(new Texture("brick_cracked3.png"));
 			break;
+		default:
+			return;
 		}
-		sprite.setColor(color);
-		sprite.setScale(scale);
-		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition(position.x, position.y);
+		sprite.setColor(COLOR);
+		sprite.setScale(SCALE);
+		sprite.setSize(sprite.getWidth() * SCALE, sprite.getHeight() * SCALE);
+		sprite.setPosition(POSITION.x, POSITION.y);
 	}
-	
 }
