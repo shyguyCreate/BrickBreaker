@@ -11,13 +11,13 @@ public class Wall extends Surface {
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private Rectangle wallRectangle;
 
+	public Rectangle getWallRectangle() {
+		return wallRectangle;
+	}
+
 	public Wall(Rectangle wallRectangle) {
 		super();
 		this.wallRectangle = wallRectangle;
-	}
-
-	public Rectangle getWallRectangle() {
-		return wallRectangle;
 	}
 
 	@Override
@@ -33,5 +33,9 @@ public class Wall extends Surface {
 	@Override
 	protected boolean hasCollision(Ball ball) {
 		return super.hasCollision(ball, wallRectangle);
+	}
+
+	@Override
+	protected void collision() {
 	}
 }

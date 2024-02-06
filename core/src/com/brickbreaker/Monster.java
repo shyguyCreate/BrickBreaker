@@ -22,13 +22,13 @@ public class Monster extends Breakable {
 	}
 
 	@Override
-	protected boolean hasCollision(Ball ball) {
-		return super.hasCollision(ball, sprite.getBoundingRectangle());
+	protected void draw(SpriteBatch batch) {
+		sprite.draw(batch);
 	}
 
 	@Override
-	protected void draw(SpriteBatch batch) {
-		sprite.draw(batch);
+	protected boolean hasCollision(Ball ball) {
+		return super.hasCollision(ball, sprite.getBoundingRectangle());
 	}
 
 	@Override

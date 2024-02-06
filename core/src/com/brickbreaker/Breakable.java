@@ -1,6 +1,6 @@
 package com.brickbreaker;
 
-public class Breakable extends Surface {
+public abstract class Breakable extends Surface {
 
 	protected int resistance;
 

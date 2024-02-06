@@ -43,42 +43,42 @@ public class Ball {
 		this.INITIAL_VELOCITY = initialVelocity;
 		sprite = new Sprite(new Texture("ball.png"));
 		sprite.setScale(scale);
-		resetBall(platform);
+		reset(platform);
 	}
 
-	void resetBall(Platform platform) {
+	void reset(Platform platform) {
 		velocityX = 0;
 		velocityY = 0;
 		position = new Vector2(platform.getPosition().x + platform.getSprite().getWidth() / 4, platform.getHeight());
 		sprite.setPosition(position.x, position.y);
 	}
 
-	void drawBall(SpriteBatch batch) {
+	void draw(SpriteBatch batch) {
 		sprite.draw(batch);
 	}
 
-	void moveBallX() {
+	void moveX() {
 		position.x += velocityX * BrickBreaker.deltaTime;
 		sprite.setPosition(position.x, position.y);
 	}
 
-	void moveBallY() {
+	void moveY() {
 		position.y += velocityY * BrickBreaker.deltaTime;
 		sprite.setPosition(position.x, position.y);
 	}
 
 	void changeDirectionX(SpriteBatch batch) {
 		velocityX *= -1;
-		moveBallX();
+		moveX();
 	}
 
 	void changeDirectionX() {
 		velocityX *= -1;
-		moveBallX();
+		moveX();
 	}
 
 	void changeDirectionY() {
 		velocityY *= -1;
-		moveBallY();
+		moveY();
 	}
 }

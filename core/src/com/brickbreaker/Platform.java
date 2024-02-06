@@ -38,13 +38,12 @@ public class Platform {
 		sprite.setPosition(position.x, position.y);
 	}
 
-	void drawPlatform(SpriteBatch batch) {
-		movePlatform();
+	void draw(SpriteBatch batch) {
 		sprite.setPosition(position.x, position.y);
 		sprite.draw(batch);
 	}
 
-	void movePlatform() {
+	void move() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 
 		if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {

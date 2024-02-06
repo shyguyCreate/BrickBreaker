@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class BrickBreaker extends ApplicationAdapter {
 
@@ -18,6 +19,7 @@ public class BrickBreaker extends ApplicationAdapter {
 	public static float deltaTime;
 
 	private Texture background;
+	long ballResetTime;
 
 	private Rectangle floorRectangle;
 	private SpriteBatch batch;
@@ -52,15 +54,16 @@ public class BrickBreaker extends ApplicationAdapter {
 
 		int numBricksColumns = 7;
 		int numBricksRows = 6;
-		int brickWeakestResistance = 1;
-
 		bricks = new Brick[numBricksRows * numBricksColumns];
+
 		Sprite brickSprite = new Sprite(new Texture("brick_new.png"));
 		brickSprite.setScale(Brick.SCALE);
 		brickSprite.setSize(brickSprite.getWidth() * Brick.SCALE, brickSprite.getHeight() * Brick.SCALE);
+
 		Vector2 position = new Vector2(0, Gdx.graphics.getHeight() * 0.8f);
 		Color[] brickColors = { Color.PINK, Color.RED, Color.PURPLE };
 		int currentColor = brickColors.length;
+		int brickWeakestResistance = 1;
 
 		for (int i = 0; i < numBricksRows * numBricksColumns; i++) {
 			if (i % numBricksColumns == 0) {
@@ -71,11 +74,12 @@ public class BrickBreaker extends ApplicationAdapter {
 			} else {
 				position.x += brickSprite.getWidth() * Brick.SCALE;
 			}
-
 			brickSprite.setPosition(position.x, position.y);
 
 			bricks[i] = new Brick(brickSprite, brickSprite.getColor(), position, brickWeakestResistance + currentColor);
 		}
+
+		ballResetTime = TimeUtils.millis();
 	}
 
 	@Override
@@ -84,27 +88,31 @@ public class BrickBreaker extends ApplicationAdapter {
 		deltaTime = Gdx.graphics.getDeltaTime();
 
 		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
-			if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
-				ball.setVelocityX(-ball.getINITIAL_VELOCITY());
-				ball.setVelocityY(ball.getINITIAL_VELOCITY());
-			} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-				ball.setVelocityX(ball.getINITIAL_VELOCITY());
-				ball.setVelocityY(ball.getINITIAL_VELOCITY());
+			if (TimeUtils.timeSinceMillis(ballResetTime) > 500) {
+				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+					ball.setVelocityX(-ball.getINITIAL_VELOCITY());
+					ball.setVelocityY(ball.getINITIAL_VELOCITY());
+				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					ball.setVelocityX(ball.getINITIAL_VELOCITY());
+					ball.setVelocityY(ball.getINITIAL_VELOCITY());
+				}
 			}
+		} else {
+			platform.move();
 		}
 
 		batch.begin();
 		batch.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
 		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
 		batch.setColor(new Color(1, 1, 1, 1));
-		platform.drawPlatform(batch);
-		ball.drawBall(batch);
+		platform.draw(batch);
+		ball.draw(batch);
 		for (Surface surface : Surface.getAllSurfaces()) {
 			surface.draw(batch);
 		}
 		batch.end();
 
-		ball.moveBallX();
+		ball.moveX();
 		for (Surface surface : Surface.getAllSurfaces()) {
 			if (surface.hasCollision(ball)) {
 				ball.changeDirectionX();
@@ -113,7 +121,7 @@ public class BrickBreaker extends ApplicationAdapter {
 			}
 		}
 
-		ball.moveBallY();
+		ball.moveY();
 		for (Surface surface : Surface.getAllSurfaces()) {
 			if (surface.hasCollision(ball)) {
 				ball.changeDirectionY();
@@ -125,7 +133,8 @@ public class BrickBreaker extends ApplicationAdapter {
 		platform.eject(ball);
 
 		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())) {
-			ball.resetBall(platform);
+			ball.reset(platform);
+			ballResetTime = TimeUtils.millis();
 			player.removeLife();
 
 			if (player.isAlive()) {
