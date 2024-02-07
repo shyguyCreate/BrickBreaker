@@ -31,8 +31,8 @@ public class Wall extends Surface {
 	}
 
 	@Override
-	protected boolean hasCollision(Ball ball) {
-		return super.hasCollision(ball, wallRectangle);
+	protected Rectangle getCollider() {
+		return wallRectangle;
 	}
 
 	@Override

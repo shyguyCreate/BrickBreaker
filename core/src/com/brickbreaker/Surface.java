@@ -25,12 +25,11 @@ public abstract class Surface {
 
 	protected abstract void draw(SpriteBatch batch);
 
-	protected abstract boolean hasCollision(Ball ball);
+	protected abstract Rectangle getCollider();
 
 	protected abstract void collision();
 
-	protected boolean hasCollision(Ball ball, Rectangle surface) {
-		return surface.overlaps(ball.getSprite().getBoundingRectangle());
+	protected boolean hasCollision(Ball ball) {
+		return ball.getSprite().getBoundingRectangle().overlaps(getCollider());
 	}
-
 }

@@ -57,6 +57,26 @@ public class Ball {
 		sprite.draw(batch);
 	}
 
+	void move() {
+		moveX();
+		for (Surface surface : Surface.getAllSurfaces()) {
+			if (surface.hasCollision(this)) {
+				changeDirectionX();
+				surface.collision();
+				break;
+			}
+		}
+
+		moveY();
+		for (Surface surface : Surface.getAllSurfaces()) {
+			if (surface.hasCollision(this)) {
+				changeDirectionY();
+				surface.collision();
+				break;
+			}
+		}
+	}
+
 	void moveX() {
 		position.x += velocityX * BrickBreaker.deltaTime;
 		sprite.setPosition(position.x, position.y);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Brick extends Breakable {
@@ -27,8 +28,8 @@ public class Brick extends Breakable {
 	}
 
 	@Override
-	protected boolean hasCollision(Ball ball) {
-		return super.hasCollision(ball, sprite.getBoundingRectangle());
+	protected Rectangle getCollider() {
+		return sprite.getBoundingRectangle();
 	}
 
 	@Override

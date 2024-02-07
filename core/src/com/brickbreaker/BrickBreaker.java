@@ -18,10 +18,10 @@ public class BrickBreaker extends ApplicationAdapter {
 	public static float wallWidth;
 	public static float deltaTime;
 
-	private Texture background;
-	long ballResetTime;
-
 	private Rectangle floorRectangle;
+	private Texture background;
+	private long ballResetTime;
+
 	private SpriteBatch batch;
 	private Player player;
 	private Platform platform;
@@ -36,9 +36,10 @@ public class BrickBreaker extends ApplicationAdapter {
 
 		initialScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		wallWidth = initialScreenSize.x * 0.025f;
-		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
 
+		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
 		background = new Texture("space.jpg");
+		ballResetTime = TimeUtils.millis();
 
 		int playerLives = 3;
 		int monsterResistance = 10;
@@ -87,20 +88,10 @@ public class BrickBreaker extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 0, 1);
 		deltaTime = Gdx.graphics.getDeltaTime();
 
-		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
-			if (TimeUtils.timeSinceMillis(ballResetTime) > 500) {
-				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
-					ball.setVelocityX(-ball.getINITIAL_VELOCITY());
-					ball.setVelocityY(ball.getINITIAL_VELOCITY());
-				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-					ball.setVelocityX(ball.getINITIAL_VELOCITY());
-					ball.setVelocityY(ball.getINITIAL_VELOCITY());
-				}
-			}
-		} else {
-			platform.move();
-		}
+		gameScreen();
+	}
 
+	private void gameScreen() {
 		batch.begin();
 		batch.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
 		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
@@ -112,25 +103,22 @@ public class BrickBreaker extends ApplicationAdapter {
 		}
 		batch.end();
 
-		ball.moveX();
-		for (Surface surface : Surface.getAllSurfaces()) {
-			if (surface.hasCollision(ball)) {
-				ball.changeDirectionX();
-				surface.collision();
-				break;
+		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
+			if (TimeUtils.timeSinceMillis(ballResetTime) > 500) {
+				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+					ball.setVelocityX(-ball.getINITIAL_VELOCITY());
+					ball.setVelocityY(ball.getINITIAL_VELOCITY());
+				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+					ball.setVelocityX(ball.getINITIAL_VELOCITY());
+					ball.setVelocityY(ball.getINITIAL_VELOCITY());
+				}
 			}
+			return;
 		}
 
-		ball.moveY();
-		for (Surface surface : Surface.getAllSurfaces()) {
-			if (surface.hasCollision(ball)) {
-				ball.changeDirectionY();
-				surface.collision();
-				break;
-			}
-		}
-
+		platform.move();
 		platform.eject(ball);
+		ball.move();
 
 		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())) {
 			ball.reset(platform);
