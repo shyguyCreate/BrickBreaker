@@ -34,7 +34,7 @@ public class Platform {
 		super();
 		sprite = new Sprite(new Texture("platform.png"));
 		sprite.setScale(width, height);
-		position = new Vector2((Gdx.graphics.getWidth() - sprite.getWidth()) / 2, 0);
+		position = new Vector2((BrickBreaker.initialScreenSize.x - sprite.getWidth()) / 2, 0);
 		sprite.setPosition(position.x, position.y);
 	}
 

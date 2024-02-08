@@ -1,6 +1,5 @@
 package com.brickbreaker;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -19,7 +18,7 @@ public class Monster extends Breakable {
 		sprite = new Sprite(new Texture("monster.png"));
 		sprite.setScale(scale);
 		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition(0 - Gdx.graphics.getWidth() * 0.25f, Gdx.graphics.getHeight() * 0.8f);
+		sprite.setPosition(0 - BrickBreaker.initialScreenSize.x * 0.25f, BrickBreaker.initialScreenSize.y * 0.8f);
 	}
 
 	@Override

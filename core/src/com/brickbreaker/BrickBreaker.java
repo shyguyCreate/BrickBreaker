@@ -5,10 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -21,8 +25,14 @@ public class BrickBreaker extends ApplicationAdapter {
 	private Rectangle floorRectangle;
 	private Texture background;
 	private long ballResetTime;
+	private boolean showMenuScreen = true;
 
 	private SpriteBatch batch;
+	private BitmapFont font;
+	private GlyphLayout fontLayout;
+	private Sprite title;
+	private Sprite button;
+
 	private Player player;
 	private Platform platform;
 	private Ball ball;
@@ -46,6 +56,19 @@ public class BrickBreaker extends ApplicationAdapter {
 		int ballInitialVelocity = 500;
 
 		batch = new SpriteBatch();
+		font = new BitmapFont();
+		fontLayout = new GlyphLayout();
+
+		title = new Sprite(new Texture("title.png"));
+		title.setScale(1.15f);
+		title.setSize(title.getWidth() * title.getScaleX(), title.getHeight() * title.getScaleY());
+		title.setPosition(initialScreenSize.x / 2 - title.getWidth() / 2, initialScreenSize.y / 2.25f);
+
+		button = new Sprite(new Texture("play.png"));
+		button.setScale(0.75f);
+		button.setSize(button.getWidth() * button.getScaleX(), button.getHeight() * button.getScaleY());
+		button.setPosition(initialScreenSize.x / 2 - button.getWidth() / 2, initialScreenSize.y / 7.5f);
+
 		player = new Player(playerLives);
 		platform = new Platform();
 		ball = new Ball(platform, ballInitialVelocity);
@@ -61,7 +84,7 @@ public class BrickBreaker extends ApplicationAdapter {
 		brickSprite.setScale(Brick.SCALE);
 		brickSprite.setSize(brickSprite.getWidth() * Brick.SCALE, brickSprite.getHeight() * Brick.SCALE);
 
-		Vector2 position = new Vector2(0, Gdx.graphics.getHeight() * 0.8f);
+		Vector2 position = new Vector2(0, Gdx.graphics.getHeight() * 0.75f);
 		Color[] brickColors = { Color.PINK, Color.RED, Color.PURPLE };
 		int currentColor = brickColors.length;
 		int brickWeakestResistance = 1;
@@ -85,17 +108,45 @@ public class BrickBreaker extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		batch.begin();
+		font.getData().setScale(2);
+		font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		fontLayout.setText(font, "Welcome to BrickBreaker!", Color.WHITE, initialScreenSize.x, Align.center, true);
+		font.draw(batch, fontLayout, 0, initialScreenSize.y / 2 + fontLayout.height / 2);
+		batch.end();
+
 		ScreenUtils.clear(0, 0, 0, 1);
 		deltaTime = Gdx.graphics.getDeltaTime();
 
-		gameScreen();
+		batch.begin();
+		batch.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
+		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
+		batch.end();
+
+		if (showMenuScreen) {
+			menuScreen();
+		} else {
+			gameScreen();
+		}
+	}
+
+	private void menuScreen() {
+
+		batch.begin();
+		title.draw(batch);
+		button.draw(batch);
+		monster.draw(batch);
+		batch.end();
+
+		if (Gdx.input.isTouched()) {
+			if (button.getBoundingRectangle().contains(new Vector2(Gdx.input.getX(), initialScreenSize.y - Gdx.input.getY()))) {
+				showMenuScreen = false;
+			}
+		}
 	}
 
 	private void gameScreen() {
 		batch.begin();
-		batch.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
-		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
-		batch.setColor(new Color(1, 1, 1, 1));
 		platform.draw(batch);
 		ball.draw(batch);
 		for (Surface surface : Surface.getAllSurfaces()) {
@@ -126,14 +177,20 @@ public class BrickBreaker extends ApplicationAdapter {
 			player.removeLife();
 
 			if (player.isAlive()) {
-				// ball.setVelocity(0);
+				showMenuScreen = true;
 			}
+		}
+
+		if (monster.resistance == 0) {
+			showMenuScreen = true;
+			create();
 		}
 	}
 
 	@Override
 	public void dispose() {
 		background.dispose();
+		font.dispose();
 		batch.dispose();
 	}
 }
