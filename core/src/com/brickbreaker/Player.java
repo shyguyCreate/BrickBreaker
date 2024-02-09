@@ -10,7 +10,7 @@ public class Player {
 	}
 
 	boolean isAlive() {
-		return lives <= 0;
+		return lives > 0;
 	}
 
 	void removeLife() {

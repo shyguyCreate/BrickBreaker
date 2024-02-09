@@ -23,6 +23,10 @@ public abstract class Surface {
 		instancesOfSurface.remove(surface);
 	}
 
+	public static void removeAllSurfaces() {
+		instancesOfSurface.clear();
+	}
+
 	protected abstract void draw(SpriteBatch batch);
 
 	protected abstract Rectangle getCollider();

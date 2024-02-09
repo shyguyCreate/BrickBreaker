@@ -13,6 +13,10 @@ public class Monster extends Breakable {
 	private Sprite sprite;
 	private float scale = 0.725f;
 
+	public Sprite getSprite() {
+		return sprite;
+	}
+
 	public Monster(int resistance) {
 		super(resistance);
 		sprite = new Sprite(new Texture("monster.png"));

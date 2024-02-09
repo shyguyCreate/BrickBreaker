@@ -5,14 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -25,13 +21,14 @@ public class BrickBreaker extends ApplicationAdapter {
 	private Rectangle floorRectangle;
 	private Texture background;
 	private long ballResetTime;
-	private boolean showMenuScreen = true;
+	private char showMenuScreen = 'm';
 
 	private SpriteBatch batch;
-	private BitmapFont font;
-	private GlyphLayout fontLayout;
 	private Sprite title;
-	private Sprite button;
+	private Sprite playButton;
+	private Sprite win;
+	private Sprite gameover;
+	private Sprite replayButton;
 
 	private Player player;
 	private Platform platform;
@@ -43,7 +40,6 @@ public class BrickBreaker extends ApplicationAdapter {
 
 	@Override
 	public void create() {
-
 		initialScreenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		wallWidth = initialScreenSize.x * 0.025f;
 
@@ -56,18 +52,31 @@ public class BrickBreaker extends ApplicationAdapter {
 		int ballInitialVelocity = 500;
 
 		batch = new SpriteBatch();
-		font = new BitmapFont();
-		fontLayout = new GlyphLayout();
 
 		title = new Sprite(new Texture("title.png"));
 		title.setScale(1.15f);
 		title.setSize(title.getWidth() * title.getScaleX(), title.getHeight() * title.getScaleY());
 		title.setPosition(initialScreenSize.x / 2 - title.getWidth() / 2, initialScreenSize.y / 2.25f);
 
-		button = new Sprite(new Texture("play.png"));
-		button.setScale(0.75f);
-		button.setSize(button.getWidth() * button.getScaleX(), button.getHeight() * button.getScaleY());
-		button.setPosition(initialScreenSize.x / 2 - button.getWidth() / 2, initialScreenSize.y / 7.5f);
+		playButton = new Sprite(new Texture("play.png"));
+		playButton.setScale(0.75f);
+		playButton.setSize(playButton.getWidth() * playButton.getScaleX(), playButton.getHeight() * playButton.getScaleY());
+		playButton.setPosition(initialScreenSize.x / 2 - playButton.getWidth() / 2, initialScreenSize.y / 7.5f);
+
+		win = new Sprite(new Texture("win.png"));
+		win.setScale(1f);
+		win.setSize(win.getWidth() * win.getScaleX(), win.getHeight() * win.getScaleY());
+		win.setPosition(initialScreenSize.x / 2 - win.getWidth() / 2, initialScreenSize.y / 2.25f);
+
+		gameover = new Sprite(new Texture("gameover.png"));
+		gameover.setScale(0.9f);
+		gameover.setSize(gameover.getWidth() * gameover.getScaleX(), gameover.getHeight() * gameover.getScaleY());
+		gameover.setPosition(initialScreenSize.x / 2 - gameover.getWidth() / 2, initialScreenSize.y / 1.75f);
+
+		replayButton = new Sprite(new Texture("replay.png"));
+		replayButton.setScale(0.8f);
+		replayButton.setSize(replayButton.getWidth() * replayButton.getScaleX(), replayButton.getHeight() * replayButton.getScaleY());
+		replayButton.setPosition(initialScreenSize.x / 2 - replayButton.getWidth() / 2, initialScreenSize.y / 5.5f);
 
 		player = new Player(playerLives);
 		platform = new Platform();
@@ -108,13 +117,6 @@ public class BrickBreaker extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		batch.begin();
-		font.getData().setScale(2);
-		font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		fontLayout.setText(font, "Welcome to BrickBreaker!", Color.WHITE, initialScreenSize.x, Align.center, true);
-		font.draw(batch, fontLayout, 0, initialScreenSize.y / 2 + fontLayout.height / 2);
-		batch.end();
-
 		ScreenUtils.clear(0, 0, 0, 1);
 		deltaTime = Gdx.graphics.getDeltaTime();
 
@@ -123,26 +125,33 @@ public class BrickBreaker extends ApplicationAdapter {
 		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
 		batch.end();
 
-		if (showMenuScreen) {
-			menuScreen();
-		} else {
+		switch (showMenuScreen) {
+		case 'm':
+			menuScreen(playButton, title, monster.getSprite());
+			break;
+		case 'n':
 			gameScreen();
+			break;
+		case 'w':
+			menuScreen(replayButton, win);
+			break;
+		case 'l':
+			menuScreen(replayButton, gameover, monster.getSprite());
+			break;
 		}
 	}
 
-	private void menuScreen() {
-
+	private void menuScreen(Sprite button, Sprite... sprites) {
 		batch.begin();
-		title.draw(batch);
+		for (Sprite sprite : sprites)
+			sprite.draw(batch);
 		button.draw(batch);
-		monster.draw(batch);
 		batch.end();
 
-		if (Gdx.input.isTouched()) {
-			if (button.getBoundingRectangle().contains(new Vector2(Gdx.input.getX(), initialScreenSize.y - Gdx.input.getY()))) {
-				showMenuScreen = false;
-			}
+		if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isTouched() && button.getBoundingRectangle().contains(new Vector2(Gdx.input.getX(), initialScreenSize.y - Gdx.input.getY()))) {
+			showMenuScreen = 'n';
 		}
+
 	}
 
 	private void gameScreen() {
@@ -176,13 +185,14 @@ public class BrickBreaker extends ApplicationAdapter {
 			ballResetTime = TimeUtils.millis();
 			player.removeLife();
 
-			if (player.isAlive()) {
-				showMenuScreen = true;
+			if (!player.isAlive()) {
+				showMenuScreen = 'l';
 			}
 		}
 
 		if (monster.resistance == 0) {
-			showMenuScreen = true;
+			showMenuScreen = 'w';
+			Surface.removeAllSurfaces();
 			create();
 		}
 	}
@@ -190,7 +200,6 @@ public class BrickBreaker extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		background.dispose();
-		font.dispose();
 		batch.dispose();
 	}
 }
