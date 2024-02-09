@@ -9,17 +9,18 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Brick extends Breakable {
 
-	static final float SCALE = 0.7f;
-
 	private Sprite sprite;
-	private final Color COLOR;
 	private final Vector2 POSITION;
+	private final float WIDTH, HEIGHT;
+	private final Color COLOR;
 
-	public Brick(Sprite sprite, Color color, Vector2 position, int resistance) {
+	public Brick(Sprite sprite, int resistance) {
 		super(resistance);
-		this.POSITION = new Vector2(position);
-		this.COLOR = new Color(color);
 		this.sprite = new Sprite(sprite);
+		this.POSITION = new Vector2(this.sprite.getX(), this.sprite.getY());
+		this.WIDTH = this.sprite.getWidth();
+		this.HEIGHT = this.sprite.getHeight();
+		this.COLOR = this.sprite.getColor();
 	}
 
 	@Override
@@ -49,8 +50,7 @@ public class Brick extends Breakable {
 			return;
 		}
 		sprite.setColor(COLOR);
-		sprite.setScale(SCALE);
-		sprite.setSize(sprite.getWidth() * SCALE, sprite.getHeight() * SCALE);
+		sprite.setSize(WIDTH, HEIGHT);
 		sprite.setPosition(POSITION.x, POSITION.y);
 	}
 }

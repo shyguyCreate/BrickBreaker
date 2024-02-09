@@ -45,13 +45,10 @@ public class BrickBreaker extends ApplicationAdapter {
 
 		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
 		background = new Texture("space.jpg");
-		ballResetTime = TimeUtils.millis();
-
-		int playerLives = 3;
-		int monsterResistance = 10;
-		int ballInitialVelocity = 500;
 
 		batch = new SpriteBatch();
+		monster = new Monster(0);
+		Surface.removeSurface(monster);
 
 		title = new Sprite(new Texture("title.png"));
 		title.setScale(1.15f);
@@ -77,39 +74,52 @@ public class BrickBreaker extends ApplicationAdapter {
 		replayButton.setScale(0.8f);
 		replayButton.setSize(replayButton.getWidth() * replayButton.getScaleX(), replayButton.getHeight() * replayButton.getScaleY());
 		replayButton.setPosition(initialScreenSize.x / 2 - replayButton.getWidth() / 2, initialScreenSize.y / 5.5f);
+	}
+
+	private void loadGameAssets() {
+
+		int playerLives = 3;
+		int monsterResistance = 10;
+		int ballInitialVelocity = 500;
 
 		player = new Player(playerLives);
 		platform = new Platform();
 		ball = new Ball(platform, ballInitialVelocity);
 		monster = new Monster(monsterResistance);
 		leftWall = new Wall(new Rectangle(0, 0, wallWidth, initialScreenSize.y));
-		rightWall = new Wall(new Rectangle(initialScreenSize.x - wallWidth, 0, initialScreenSize.x, initialScreenSize.y));
+		rightWall = new Wall(new Rectangle(initialScreenSize.x - wallWidth, 0, wallWidth, initialScreenSize.y));
 
 		int numBricksColumns = 7;
 		int numBricksRows = 6;
 		bricks = new Brick[numBricksRows * numBricksColumns];
 
 		Sprite brickSprite = new Sprite(new Texture("brick_new.png"));
-		brickSprite.setScale(Brick.SCALE);
-		brickSprite.setSize(brickSprite.getWidth() * Brick.SCALE, brickSprite.getHeight() * Brick.SCALE);
+		float brickWidth = (initialScreenSize.x - wallWidth * 2) / numBricksColumns;
+		float brickHeight = brickSprite.getHeight() * 0.6f;
+		brickSprite.setSize(brickWidth, brickHeight);
 
-		Vector2 position = new Vector2(0, Gdx.graphics.getHeight() * 0.75f);
+		Vector2 brickPosition = new Vector2();
 		Color[] brickColors = { Color.PINK, Color.RED, Color.PURPLE };
-		int currentColor = brickColors.length;
+		int currentColor = brickColors.length - 1;
 		int brickWeakestResistance = 1;
 
 		for (int i = 0; i < numBricksRows * numBricksColumns; i++) {
-			if (i % numBricksColumns == 0) {
-				position.x = 0;
-				position.y -= brickSprite.getHeight() * Brick.SCALE;
+			if (i == 0) {
+				brickPosition.x = wallWidth;
+				brickPosition.y = initialScreenSize.y * 0.725f;
+				brickSprite.setColor(brickColors[currentColor]);
+
+			} else if (i % numBricksColumns == 0) {
+				brickPosition.x = wallWidth;
+				brickPosition.y -= brickHeight;
 				currentColor = (currentColor > 0) ? currentColor - 1 : brickColors.length - 1;
 				brickSprite.setColor(brickColors[currentColor]);
 			} else {
-				position.x += brickSprite.getWidth() * Brick.SCALE;
+				brickPosition.x += brickWidth;
 			}
-			brickSprite.setPosition(position.x, position.y);
+			brickSprite.setPosition(brickPosition.x, brickPosition.y);
 
-			bricks[i] = new Brick(brickSprite, brickSprite.getColor(), position, brickWeakestResistance + currentColor);
+			bricks[i] = new Brick(brickSprite, brickWeakestResistance + currentColor);
 		}
 
 		ballResetTime = TimeUtils.millis();
@@ -150,8 +160,8 @@ public class BrickBreaker extends ApplicationAdapter {
 
 		if (Gdx.input.isKeyPressed(Keys.SPACE) || Gdx.input.isTouched() && button.getBoundingRectangle().contains(new Vector2(Gdx.input.getX(), initialScreenSize.y - Gdx.input.getY()))) {
 			showMenuScreen = 'n';
+			loadGameAssets();
 		}
-
 	}
 
 	private void gameScreen() {
@@ -164,14 +174,16 @@ public class BrickBreaker extends ApplicationAdapter {
 		batch.end();
 
 		if (ball.getVelocityX() == 0 || ball.getVelocityY() == 0) {
-			if (TimeUtils.timeSinceMillis(ballResetTime) > 500) {
-				if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
-					ball.setVelocityX(-ball.getINITIAL_VELOCITY());
-					ball.setVelocityY(ball.getINITIAL_VELOCITY());
-				} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-					ball.setVelocityX(ball.getINITIAL_VELOCITY());
-					ball.setVelocityY(ball.getINITIAL_VELOCITY());
-				}
+
+			if (TimeUtils.timeSinceMillis(ballResetTime) < 500)
+				return;
+
+			if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
+				ball.setVelocityX(-ball.getINITIAL_VELOCITY());
+				ball.setVelocityY(ball.getINITIAL_VELOCITY());
+			} else if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
+				ball.setVelocityX(ball.getINITIAL_VELOCITY());
+				ball.setVelocityY(ball.getINITIAL_VELOCITY());
 			}
 			return;
 		}
@@ -187,13 +199,13 @@ public class BrickBreaker extends ApplicationAdapter {
 
 			if (!player.isAlive()) {
 				showMenuScreen = 'l';
+				Surface.removeAllSurfaces();
 			}
 		}
 
 		if (monster.resistance == 0) {
 			showMenuScreen = 'w';
 			Surface.removeAllSurfaces();
-			create();
 		}
 	}
 

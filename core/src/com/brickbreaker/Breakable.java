@@ -15,5 +15,4 @@ public abstract class Breakable extends Surface {
 		if (resistance <= 0)
 			Surface.removeSurface(this);
 	}
-
 }
