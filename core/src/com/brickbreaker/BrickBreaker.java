@@ -51,9 +51,9 @@ public class BrickBreaker extends ApplicationAdapter {
 		Surface.removeSurface(monster);
 
 		title = new Sprite(new Texture("title.png"));
-		title.setScale(1.15f);
+		title.setScale(0.9f);
 		title.setSize(title.getWidth() * title.getScaleX(), title.getHeight() * title.getScaleY());
-		title.setPosition(initialScreenSize.x / 2 - title.getWidth() / 2, initialScreenSize.y / 2.25f);
+		title.setPosition(initialScreenSize.x / 2 - title.getWidth() / 2, initialScreenSize.y / 2.5f);
 
 		playButton = new Sprite(new Texture("play.png"));
 		playButton.setScale(0.75f);
