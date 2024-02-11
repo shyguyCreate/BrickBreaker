@@ -249,7 +249,7 @@ public class BrickBreaker extends ApplicationAdapter {
 
 	/**
 	 * Display either the main, win or gameover menu in the screen.
-	 *
+	 * 
 	 * @param button  Sprite that should be click
 	 * @param sprites Sprite that only should be drawn
 	 */
