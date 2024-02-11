@@ -11,7 +11,8 @@ public class Brick extends Breakable {
 
 	private Sprite sprite;
 	private final Vector2 POSITION;
-	private final float WIDTH, HEIGHT;
+	private final float WIDTH;
+	private final float HEIGHT;
 	private final Color COLOR;
 
 	public Brick(Sprite sprite, int resistance) {

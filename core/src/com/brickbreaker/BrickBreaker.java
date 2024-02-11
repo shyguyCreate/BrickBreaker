@@ -135,19 +135,25 @@ public class BrickBreaker extends ApplicationAdapter {
 		batch.draw(background, 0, 0, initialScreenSize.x, initialScreenSize.y);
 		batch.end();
 
-		switch (showMenuScreen) {
-		case 'm':
-			menuScreen(playButton, title, monster.getSprite());
-			break;
-		case 'n':
-			gameScreen();
-			break;
-		case 'w':
-			menuScreen(replayButton, win);
-			break;
-		case 'l':
-			menuScreen(replayButton, gameover, monster.getSprite());
-			break;
+		try {
+			switch (showMenuScreen) {
+			case 'm':
+				menuScreen(playButton, title, monster.getSprite());
+				break;
+			case 'n':
+				gameScreen();
+				break;
+			case 'w':
+				menuScreen(replayButton, win);
+				break;
+			case 'l':
+				menuScreen(replayButton, gameover, monster.getSprite());
+				break;
+			default:
+				throw new Exception("showMenuScreen has invalid value");
+			}
+		} catch (Exception e) {
+			showMenuScreen = 'm';
 		}
 	}
 

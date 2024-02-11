@@ -87,11 +87,6 @@ public class Ball {
 		sprite.setPosition(position.x, position.y);
 	}
 
-	void changeDirectionX(SpriteBatch batch) {
-		velocityX *= -1;
-		moveX();
-	}
-
 	void changeDirectionX() {
 		velocityX *= -1;
 		moveX();
