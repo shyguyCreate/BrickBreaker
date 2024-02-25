@@ -12,9 +12,13 @@ import com.badlogic.gdx.math.Rectangle;
  */
 public class Wall extends Surface {
 
-	// Tool to draw the rectangles in the game.
+	/**
+	 * Tool to draw the rectangles in the game.
+	 */
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
-	// Position and dimensions of the wall.
+	/**
+	 * Position and dimensions of the wall.
+	 */
 	private Rectangle wallRectangle;
 
 	/**

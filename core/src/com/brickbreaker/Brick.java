@@ -12,15 +12,25 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Brick extends Breakable {
 
-	// Sprite that holds the brick image.
+	/**
+	 * Sprite that holds the brick image.
+	 */
 	private Sprite sprite;
-	// Current position of the brick.
+	/**
+	 * Current position of the brick.
+	 */
 	private final Vector2 POSITION;
-	// How long the scale of the brick will be.
+	/**
+	 * How long the scale of the brick will be.
+	 */
 	private final float WIDTH;
-	// How tall the scale of the brick will be.
+	/**
+	 * How tall the scale of the brick will be.
+	 */
 	private final float HEIGHT;
-	// Color the brick will be painted.
+	/**
+	 * Color the brick will be painted.
+	 */
 	private final Color COLOR;
 
 	/**

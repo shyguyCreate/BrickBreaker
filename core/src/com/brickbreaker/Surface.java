@@ -12,7 +12,9 @@ import com.badlogic.gdx.math.Rectangle;
  */
 public abstract class Surface {
 
-	// Holds all the object and child objects of this class.
+	/**
+	 * Holds all the object and child objects of this class.
+	 */
 	private static List<Surface> instancesOfSurface = new ArrayList<Surface>();
 
 	/**

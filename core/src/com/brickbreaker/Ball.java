@@ -11,17 +11,29 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Ball {
 
-	// Current position of the ball.
+	/**
+	 * Current position of the ball.
+	 */
 	private Vector2 position;
-	// Sprite that holds the ball image.
+	/**
+	 * Sprite that holds the ball image.
+	 */
 	private Sprite sprite;
-	// Sets the scale size of the ball sprite.
+	/**
+	 * Sets the scale size of the ball sprite.
+	 */
 	private float scale = 0.4f;
-	// Velocity the was given to the ball at the beginning.
+	/**
+	 * Velocity the was given to the ball at the beginning.
+	 */
 	private final int INITIAL_VELOCITY;
-	// How fast the ball can move horizontally.
+	/**
+	 * How fast the ball can move horizontally.
+	 */
 	private int velocityX = 0;
-	// How fast the ball can move vertically.
+	/**
+	 * How fast the ball can move vertically.
+	 */
 	private int velocityY = 0;
 
 	/**

@@ -14,9 +14,13 @@ import com.badlogic.gdx.utils.Timer.Task;
  */
 public class Monster extends Breakable {
 
-	// Sprite that holds the monster image.
+	/**
+	 * Sprite that holds the monster image.
+	 */
 	private Sprite sprite;
-	// How big the scale of the monster will be.
+	/**
+	 * How big the scale of the monster will be.
+	 */
 	private float scale = 0.725f;
 
 	/**

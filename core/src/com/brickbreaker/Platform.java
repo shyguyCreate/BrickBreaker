@@ -14,17 +14,29 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Platform {
 
-	// Returns a random number between to given numbers.
+	/**
+	 * Returns a random number between to given numbers.
+	 */
 	private Random random = new Random();
-	// Current position of the platform.
+	/**
+	 * Current position of the platform.
+	 */
 	private Vector2 position;
-	// Sprite that holds the platform image.
+	/**
+	 * Sprite that holds the platform image.
+	 */
 	private Sprite sprite;
-	// How long the scale of platform will be.
+	/**
+	 * How long the scale of platform will be.
+	 */
 	private float width = 1f;
-	// How tall the scale of platform will be.
+	/**
+	 * How tall the scale of platform will be.
+	 */
 	private float height = 1f;
-	// How fast the platform can move.
+	/**
+	 * How fast the platform can move.
+	 */
 	private int velocity = 300;
 
 	/**

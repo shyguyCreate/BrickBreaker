@@ -5,7 +5,9 @@ package com.brickbreaker;
  */
 public class Player {
 
-	// Chances to keep playing the game.
+	/**
+	 * Chances to keep playing the game.
+	 */
 	private int lives;
 
 	/**

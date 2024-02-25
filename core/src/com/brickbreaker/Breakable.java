@@ -6,7 +6,9 @@ package com.brickbreaker;
  */
 public abstract class Breakable extends Surface {
 
-	// Number of hits the object has left before “breaking”.
+	/**
+	 * Number of hits the object has left before “breaking”.
+	 */
 	protected int resistance;
 
 	/**
@@ -28,7 +30,7 @@ public abstract class Breakable extends Surface {
 		// Remove one from resistance.
 		resistance -= 1;
 
-		// If resistance is less than or equal zero.
+		// If resistance is less than or equal zero,
 		// remove this object from surfaces list.
 		if (resistance <= 0)
 			Surface.removeSurface(this);

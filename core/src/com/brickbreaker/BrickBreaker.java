@@ -19,48 +19,84 @@ import com.badlogic.gdx.utils.TimeUtils;
  */
 public class BrickBreaker extends ApplicationAdapter {
 
-	// Dimensions in which the game window is started.
+	/**
+	 * Dimensions in which the game window is started.
+	 */
 	public static Vector2 initialScreenSize;
-	// Left and right width that will delimit the playground.
+	/**
+	 * Left and right width that will delimit the playground.
+	 */
 	public static float wallWidth;
-	// Time that passes between each frame.
+	/**
+	 * Time that passes between each frame.
+	 */
 	public static float deltaTime;
 
-	// Dimensions of the floor beneath the platform.
-	private Rectangle floorRectangle;
-	// Image that will be used as background of the game.
+	/**
+	 * Image that will be used as background of the game.
+	 */
 	private Texture background;
-	// Time in milliseconds since the ball touched the floor.
+	/**
+	 * Time in milliseconds since the ball touched the floor.
+	 */
 	private long ballResetTime;
-	// Decide what menu to show to the user with a char.
+	/**
+	 * Decide what menu to show to the user with a char.
+	 */
 	private char showMenuScreen = 'm';
 
-	// Object that draws sprites to the screen.
+	/**
+	 * Object that draws sprites to the screen.
+	 */
 	private SpriteBatch batch;
-	// Sprite that holds the title image of the game.
+	/**
+	 * Sprite that holds the title image of the game.
+	 */
 	private Sprite title;
-	// Sprite that holds the play button image.
+	/**
+	 * Sprite that holds the play button image.
+	 */
 	private Sprite playButton;
-	// Sprite that holds the win title image.
+	/**
+	 * Sprite that holds the win title image.
+	 */
 	private Sprite win;
-	// Sprite that holds the gameover title image.
+	/**
+	 * Sprite that holds the gameover title image.
+	 */
 	private Sprite gameover;
-	// Sprite that holds the replay button image.
+	/**
+	 * Sprite that holds the replay button image.
+	 */
 	private Sprite replayButton;
 
-	// Object of the Player class.
+	/**
+	 * Object of the Player class.
+	 */
 	private Player player;
-	// Object of the Platform class.
+	/**
+	 * Object of the Platform class.
+	 */
 	private Platform platform;
-	// Object of the Ball class.
+	/**
+	 * Object of the Ball class.
+	 */
 	private Ball ball;
-	// Object of the Monster class.
+	/**
+	 * Object of the Monster class.
+	 */
 	private Monster monster;
-	// Object of the Wall class initialized to the left.
+	/**
+	 * Object of the Wall class initialized to the left.
+	 */
 	private Wall leftWall;
-	// Object of the Wall class initialized to the right.
+	/**
+	 * Object of the Wall class initialized to the right.
+	 */
 	private Wall rightWall;
-	// Collection of objects of the Brick class.
+	/**
+	 * Collection of objects of the Brick class.
+	 */
 	private Brick[] bricks;
 
 	/**
@@ -73,8 +109,6 @@ public class BrickBreaker extends ApplicationAdapter {
 		// Set walls width based on screen width.
 		wallWidth = initialScreenSize.x * 0.025f;
 
-		// Set the floor beneath the visible screen.
-		floorRectangle = new Rectangle(0, 0, initialScreenSize.x, -15);
 		// Set background image.
 		background = new Texture("space.jpg");
 
@@ -324,8 +358,8 @@ public class BrickBreaker extends ApplicationAdapter {
 		// Move ball and check for collisions.
 		ball.move();
 
-		// Check if the ball collides with the floor.
-		if (floorRectangle.overlaps(ball.getSprite().getBoundingRectangle())) {
+		// Check if the ball is below the screen.
+		if (ball.getSprite().getY() < -50) {
 			// Reset the ball on top of the platform.
 			ball.reset(platform);
 			// Save current time of collision.
